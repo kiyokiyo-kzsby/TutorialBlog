@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>よくあるブログサービス</title>
+</head>
+<body>
+    {% if login %}
+    <div>
+        <a href="/mypage">{{user.name}}</a>
+    </div>
+    {% else %}
+    <div>
+        <a href="/login">ログイン</a>
+    </div>
+    {% endif %}
+
+    <h1>よくあるブログサービス</h1>
+
+    {% for content in contents %}
+    <div>
+        {% content_url = "/content/" + content.id %}
+        <span>{{content.author_name}}：<a href={{content_url}}>{{content.title}}</a>　//　{{content.good_num}} good</span>
+    </div>
+    {% endfor %}
+
+</body>
+</html>

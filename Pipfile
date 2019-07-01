@@ -6,6 +6,10 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
+flask = "*"
+flask-sqlalchemy = "*"
+psycopg2-binary = "*"
+flask-session = "*"
 
 [requires]
 python_version = "3.7"

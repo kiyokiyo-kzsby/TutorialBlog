@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>よくあるブログサービス</title>
+</head>
+<body>
+    <h1>{{user.name}}</h1>
+
+    {% for content in contents %}
+    <div>
+        {% content_url = "/content/" + content.id %}
+        <span>{{content.author_name}}：<a href={{content_url}}>{{content.title}}</a>　//　{{content.good_num}} good</span>
+    </div>
+    {% endfor %}
+</body>
+</html>
