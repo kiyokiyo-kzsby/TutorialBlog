@@ -5,6 +5,7 @@
     <title>よくあるブログサービス</title>
 </head>
 <body>
+    <!--
     {% if user %}
     <div>
         <a href="/mypage">{{user.name}}</a>
@@ -14,13 +15,13 @@
         <a href="/login">ログイン</a>
     </div>
     {% endif %}
+    -->
 
     <h1>よくあるブログサービス</h1>
 
     {% for content in contents %}
     <div>
-        {% content_url = "/content/" + content.id %}
-        <span>{{content.author_name}}：<a href={{content_url}}>{{content.title}}</a>　//　{{content.good_num}} good</span>
+        <p>{{content.user.name}}：<a href="/content/{{content.id}}">{{content.title}}</a>　//　{{content.good_num}} good</p>
     </div>
     {% endfor %}
 
