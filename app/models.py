@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from app.app import app
 from datetime import datetime
+from flask_login import UserMixin
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:@localhost/tutorial_blog'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -25,3 +26,14 @@ class User(db.Model):
 
     def __repr__(self):
         return '<User %r>' % self.name
+
+
+class AuthUser(UserMixin,db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'),nullable=False)
+    is_authenticated = db.Column(db.Boolean)
+    is_active = db.Column(db.Boolean)
+    is_anonymous = db.Column(db.Boolean)
+
+    def get_id(self):
+        return self.id
