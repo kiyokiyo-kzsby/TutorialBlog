@@ -5,17 +5,16 @@
     <title>よくあるブログサービス</title>
 </head>
 <body>
-    <!--
-    {% if user %}
+    {% if current_user.is_authenticated %}
     <div>
-        <a href="/mypage">{{user.name}}</a>
+        <a href="/mypage/{{current_user.name}}">{{current_user.name}}</a>
+        <a href="/logout">ログアウト</a>
     </div>
     {% else %}
     <div>
         <a href="/login">ログイン</a>
     </div>
     {% endif %}
-    -->
 
     <h1>よくあるブログサービス</h1>
 

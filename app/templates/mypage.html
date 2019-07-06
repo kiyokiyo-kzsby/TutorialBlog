@@ -5,12 +5,11 @@
     <title>よくあるブログサービス</title>
 </head>
 <body>
-    <h1>{{user.name}}</h1>
+    <h1>{{current_user.name}}</h1>
 
     {% for content in contents %}
     <div>
-        {% content_url = "/content/" + content.id %}
-        <span>{{content.author_name}}：<a href={{content_url}}>{{content.title}}</a>　//　{{content.good_num}} good</span>
+        <p>{{content.user.name}}：<a href="/content/{{content.id}}">{{content.title}}</a>　//　{{content.good_num}} good</p>
     </div>
     {% endfor %}
 </body>

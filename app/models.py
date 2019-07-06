@@ -19,22 +19,10 @@ class Content(db.Model):
     def __repr__(self):
         return '<Content %r>' % self.title
 
-class User(db.Model):
+class User(db.Model,UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     hashed_password = db.Column(db.String(100), nullable=False)
 
     def __repr__(self):
         return '<User %r>' % self.name
-
-"""
-class AuthUser(UserMixin,db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'),nullable=False)
-    is_authenticated = db.Column(db.Boolean)
-    is_active = db.Column(db.Boolean)
-    is_anonymous = db.Column(db.Boolean)
-
-    def get_id(self):
-        return self.id
-"""
