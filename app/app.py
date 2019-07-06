@@ -1,5 +1,5 @@
-from flask import Flask,render_template,request,redirect,url_for
-from flask_login import LoginManager,login_user,logout_user,login_required
+from flask import Flask,render_template,request,redirect,url_for,abort
+from flask_login import LoginManager,login_user,logout_user,login_required,current_user
 from app import key
 from hashlib import sha256
 
@@ -8,7 +8,6 @@ from app.models import db,Content,User
 login_manager = LoginManager()
 login_manager.init_app(app)
 app.config["SECRET_KEY"] = key.SECRET_KEY
-
 
 
 @login_manager.user_loader
@@ -76,10 +75,12 @@ def sign_up_submit():
 @app.route("/mypage/<user_name>")
 @login_required
 def mypage(user_name):
-    user_id = User.query.filter_by(name=user_name).all()[0].id
-    contents = Content.query.filter_by(user_id=user_id).all()
-    return render_template("mypage.html",contents=contents)
-
+    if user_name == current_user.name:
+        user_id = User.query.filter_by(name=user_name).all()[0].id
+        contents = Content.query.filter_by(user_id=user_id).all()
+        return render_template("mypage.html", contents=contents)
+    else:
+        abort(404)
 
 
 @app.route("/logout")
@@ -87,6 +88,53 @@ def mypage(user_name):
 def logout():
     logout_user()
     return redirect(url_for("index"))
+
+
+@app.route("/edit/<content_id>")
+@login_required
+def edit(content_id):
+    if content_id == "new":
+        return render_template("edit.html")
+    else:
+        content = Content.query.filter_by(id=content_id).all()[0]
+        if(content.user_id==current_user.id):
+            return render_template("edit.html", content=content)
+        else:
+            return abort(404)
+
+
+@app.route("/publish/<content_id>",methods=["POST"])
+@login_required
+def publish(content_id):
+    title = request.form["title"]
+    body = request.form["body"]
+    if(content_id == "new"):
+        content = Content(title=title,body=body,user_id=current_user.id)
+        db.session.add(content)
+        db.session.commit()
+        return redirect(url_for("index"))
+    else:
+        content = Content.query.filter_by(id=content_id).all()[0]
+        if content.user_id == current_user.id:
+            content.title = title
+            content.body = body
+            db.session.commit()
+            return redirect(url_for("index"))
+        else:
+            abort(404)
+
+
+@app.route("/delete/<content_id>")
+@login_required
+def delete(content_id):
+    content = Content.query.filter_by(id=content_id).all()[0]
+    if content.user_id == current_user.id:
+        db.session.delete(content)
+        db.session.commit()
+        return redirect(url_for("index"))
+    else:
+        abort(404)
+
 
 
 if __name__ == "__main__":

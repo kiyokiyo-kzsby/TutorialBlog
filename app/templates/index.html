@@ -7,6 +7,7 @@
 <body>
     {% if current_user.is_authenticated %}
     <div>
+        <a href="/edit/new">新規作成</a>
         <a href="/mypage/{{current_user.name}}">{{current_user.name}}</a>
         <a href="/logout">ログアウト</a>
     </div>
@@ -20,7 +21,7 @@
 
     {% for content in contents %}
     <div>
-        <p>{{content.user.name}}：<a href="/content/{{content.id}}">{{content.title}}</a>　//　{{content.good_num}} good</p>
+        <p>{{content.user.name}}：<a href="/content/{{content.id}}">{{content.title}}</a>　//　{{content.good_count}} good</p>
     </div>
     {% endfor %}
 
