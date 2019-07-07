@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>よくあるブログサービス</title>
+</head>
+<body>
+    <div id="navigation_bar">
+        <a href="/">メインページ</a>
+        {% if current_user.is_authenticated %}
+        <a href="/edit/new">新規作成</a>
+        <a href="/mypage/{{current_user.name}}">{{current_user.name}}</a>
+        <a href="/logout">ログアウト</a>
+        {% else %}
+        <a href="/login">ログイン</a>
+        {% endif %}
+    </div>
+
+    <div id="body">
+        {% block body %}
+        {% endblock %}
+    </div>
+
+</body>
+</html>

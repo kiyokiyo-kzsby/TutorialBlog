@@ -1,18 +1,14 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <title>よくあるブログサービス</title>
-</head>
-<body>
-    <a href="/">メインページへ戻る</a>
-    {% if current_user.id == content.user_id %}
-    <a href="/edit/{{content.id}}">編集する</a>
-    <a href="/delete/{{content.id}}">削除する</a>
-    {% endif %}
-    <h1>{{content.title}}</h1>
-    <p>{{content.user.name}}</p>
-    <p>{{content.good_count}} good</p>
-    <p>{{content.body}}</p>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block body %}
+
+{% if current_user.id == content.user_id %}
+<a href="/edit/{{content.id}}">編集する</a>
+<a href="/delete/{{content.id}}">削除する</a>
+{% endif %}
+<h1>{{content.title}}</h1>
+<p>{{content.user.name}}</p>
+<p>{{content.good_count}} good</p>
+<p>{{content.body}}</p>
+
+{% endblock %}

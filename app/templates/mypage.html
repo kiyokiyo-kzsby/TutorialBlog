@@ -1,16 +1,13 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <title>よくあるブログサービス</title>
-</head>
-<body>
-    <h1>{{current_user.name}}</h1>
+{% extends "base.html" %}
 
-    {% for content in contents %}
-    <div>
-        <p>{{content.user.name}}：<a href="/content/{{content.id}}">{{content.title}}</a>　//　{{content.good_num}} good</p>
-    </div>
-    {% endfor %}
-</body>
-</html>
+{% block body %}
+
+<h1>{{current_user.name}}</h1>
+
+{% for content in contents %}
+<div>
+    <p>{{content.user.name}}：<a href="/content/{{content.id}}">{{content.title}}</a>　//　{{content.good_num}} good</p>
+</div>
+{% endfor %}
+
+{% endblock %}

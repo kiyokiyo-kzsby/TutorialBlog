@@ -1,28 +1,24 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <title>よくあるブログサービス</title>
-</head>
-<body>
-    <h1>ブログ作成</h1>
-    {% if content %}
-    <form action="/publish/{{content.id}}" method="post">
-        <input type="text" name="title" placeholder="title" value="{{content.title}}">
-        <br>
-        <input type="text" name="body" placeholder="body" value="{{content.body}}">
-        <br>
-        <input type="submit" value="更新">
-    </form>
-    {% else %}
-    <form action="/publish/new" method="post">
-        <input type="text" name="title" placeholder="title">
-        <br>
-        <input type="text" name="body" placeholder="body">
-        <br>
-        <input type="submit" value="投稿">
-    </form>
-    {% endif %}
+{% extends "base.html" %}
 
-</body>
-</html>
+{% block body %}
+
+<h1>ブログ作成</h1>
+{% if content %}
+<form action="/publish/{{content.id}}" method="post">
+    <input type="text" name="title" placeholder="title" value="{{content.title}}">
+    <br>
+    <input type="text" name="body" placeholder="body" value="{{content.body}}">
+    <br>
+    <input type="submit" value="更新">
+</form>
+{% else %}
+<form action="/publish/new" method="post">
+    <input type="text" name="title" placeholder="title">
+    <br>
+    <input type="text" name="body" placeholder="body">
+    <br>
+    <input type="submit" value="投稿">
+</form>
+{% endif %}
+
+{% endblock %}
