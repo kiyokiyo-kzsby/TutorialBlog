@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block body %}
+
+<form action="/config_submit" method="post" enctype="multipart/form-data">
+    <span>ユーザ名</span>
+    <input type="text" name="name" value="{{current_user.name}}">
+    <br>
+    <span>紹介文</span>
+    <input type="text" name="description" value="{{current_user.description}}">
+    <br>
+    <span>アイコン</span>
+    <img src="/static/uploads/{{current_user.id}}.jpg">
+    <input type="file" name="icon">
+    <span>（png,jpgのみ）</span>
+    <br>
+    <input type="submit" value="更新">
+</form>
+
+<a href="/reset_password">パスワードをリセット</a>
+
+{% endblock %}

@@ -11,6 +11,8 @@ flask-sqlalchemy = "*"
 psycopg2-binary = "*"
 flask-session = "*"
 flask-login = "*"
+pil = "*"
+pillow = "*"
 
 [requires]
 python_version = "3.7"

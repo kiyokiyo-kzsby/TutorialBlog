@@ -2,12 +2,17 @@ from flask import Flask,render_template,request,redirect,url_for,abort
 from flask_login import LoginManager,login_user,logout_user,login_required,current_user
 from app import key
 from hashlib import sha256
+from PIL import Image
+import os
 
 app = Flask(__name__)
 from app.models import db,Content,User
 login_manager = LoginManager()
 login_manager.init_app(app)
 app.config["SECRET_KEY"] = key.SECRET_KEY
+app.config["MAX_CONTENT_LENGTH"] = 1 * 1024 * 1024;
+app.config['UPLOAD_FOLDER'] = "/uploads"
+
 
 
 @login_manager.user_loader
@@ -73,14 +78,10 @@ def sign_up_submit():
 
 
 @app.route("/mypage/<user_name>")
-@login_required
 def mypage(user_name):
-    if user_name == current_user.name:
-        user_id = User.query.filter_by(name=user_name).all()[0].id
-        contents = Content.query.filter_by(user_id=user_id).all()
-        return render_template("mypage.html", contents=contents)
-    else:
-        abort(404)
+    user = User.query.filter_by(name=user_name).all()[0]
+    contents = Content.query.filter_by(user_id=user.id).all()
+    return render_template("mypage.html",user=user, contents=contents)
 
 
 @app.route("/logout")
@@ -135,6 +136,31 @@ def delete(content_id):
     else:
         abort(404)
 
+
+@app.route("/config/<user_name>")
+@login_required
+def config(user_name):
+    if user_name == current_user.name:
+        return render_template("config.html")
+    else:
+        abort(404)
+
+
+@app.route("/config_submit",methods=["POST"])
+@login_required
+def config_submit():
+    user = User.query.filter_by(id=current_user.id).all()[0]
+    user.name = request.form["name"]
+    user.description = request.form["description"]
+    icon = request.files["icon"]
+    file_extension = icon.filename.rsplit('.', 1)[1]
+    if file_extension in ["jpg","png"]:
+        icon = Image.open(request.files["icon"])
+        icon_resize = icon.resize((256,256))
+        icon_resize.save("app/static/uploads/"+str(current_user.id)+".jpg")
+        return redirect("/mypage/"+current_user.name)
+    else:
+        abort(404)
 
 
 if __name__ == "__main__":

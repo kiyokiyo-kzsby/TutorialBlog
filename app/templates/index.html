@@ -6,7 +6,12 @@
 
 {% for content in contents %}
 <div>
-    <p>{{content.user.name}}：<a href="/content/{{content.id}}">{{content.title}}</a>　//　{{content.good_count}} good</p>
+    <p>
+        <a href="/mypage/{{content.user.name}}">{{content.user.name}}</a>
+        ：
+        <a href="/content/{{content.id}}">{{content.title}}</a>
+        　//　 {{content.good_count}} good
+    </p>
 </div>
 {% endfor %}
 
