@@ -7,10 +7,23 @@
 {% for content in contents %}
 <div>
     <p>
-        <a href="/mypage/{{content.user.name}}">{{content.user.name}}</a>
-        ：
+        <a href="/mypage/{{content.user.name}}" class="content_user_name">
+            <img src="/static/uploads/{{content.user.icon_file_name}}" width="32" height="32" title="{{content.user.name}}">
+            {{content.user.name}}
+        </a>
+        <span>：</span>
         <a href="/content/{{content.id}}">{{content.title}}</a>
-        　//　 {{content.good_count}} good
+        <span>　　 </span>
+        {% if current_user.is_authenticated %}
+            {% if content.good %}
+            <i class="far fa-heart good-btn good-btn-active" data-content_id="{{content.id}}"></i>
+            {% else %}
+            <i class="far fa-heart good-btn" data-content_id="{{content.id}}"></i>
+            {% endif %}
+        {% else %}
+        <i class="far fa-heart" data-content_id="{{content.id}}"></i>
+        {% endif %}
+        <span class="content_good_count">  {{content.good_count}}</span>
     </p>
 </div>
 {% endfor %}

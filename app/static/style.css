@@ -1,0 +1,25 @@
+.nav-icon{
+    color : gray;
+}
+
+div#navigation_bar a{
+    margin : 0px 10px;
+    text-decoration : none;
+    color : black;
+}
+
+.content_user_name{
+    text-decoration : none;
+    color : black;
+}
+
+.good-btn:hover{
+    color : pink;
+    font-size : 1.1em;
+    cursor : pointer;
+}
+
+.good-btn-active{
+    color : red;
+}
+
