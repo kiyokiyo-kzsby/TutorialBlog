@@ -2,8 +2,10 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from flask_login import UserMixin
 from app.app import app
+import os
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:@localhost/tutorial_blog'
+db_uri = os.environ.get('DATABASE_URL') or 'postgresql://postgres:@localhost/tutorial_blog'
+app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 

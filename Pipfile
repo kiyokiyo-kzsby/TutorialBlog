@@ -13,6 +13,7 @@ flask-session = "*"
 flask-login = "*"
 pil = "*"
 pillow = "*"
+gunicorn = "*"
 
 [requires]
 python_version = "3.7"
