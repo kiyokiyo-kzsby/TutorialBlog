@@ -7,7 +7,7 @@
 <form action="/publish/{{content.id}}" method="post">
     <input type="text" name="title" placeholder="title" value="{{content.title}}">
     <br>
-    <input type="text" name="body" placeholder="body" value="{{content.body}}">
+    <textarea name="body" placeholder="body" rows="10" cols="50">{{content.body}}</textarea>
     <br>
     <input type="submit" value="更新">
 </form>
