@@ -19,23 +19,3 @@ $(function(){
         });
     });
 });
-
-/*
-$(window).load(init());
-
-function init() {
-  $(".good-btn").click(function() {
-    $.ajax({
-      type:'POST',
-      url:'/postText',
-      data:{'content_id': $(this).data('content_id')},
-      contentType:'application/json',
-      success:function(data) {
-        $this.next().text(data);
-        $this.toggleClass('good-btn-active');
-      }
-    });
-    return false;
-  });
-}
-*/
