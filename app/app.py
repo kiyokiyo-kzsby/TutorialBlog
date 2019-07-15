@@ -81,7 +81,7 @@ def sign_up_submit():
             return redirect(url_for("sign_up"))
         else:
             hashed_password = sha256((user_name + password + key.SALT).encode("utf-8")).hexdigest()
-            new_user = User(name=user_name,hashed_password=hashed_password)
+            new_user = User(name=user_name,hashed_password=hashed_password,icon_file_name="default.jpg")
             db.session.add(new_user)
             db.session.commit()
             login_user(new_user)
