@@ -178,7 +178,7 @@ def config(user_name):
 @login_required
 def config_submit():
     user = User.query.filter_by(id=current_user.id).all()[0]
-    if len(User.query.filter_by(name=request.form["name"]).all()) >= 1 or request.form["name"].find("/") >= 0:
+    if (current_user.name != request.form["name"] and len(User.query.filter_by(name=request.form["name"]).all())>=1) or request.form["name"].find("/") >= 0:
         abort(404)
     user.name = escape(request.form["name"])
     user.description = escape(request.form["description"])
