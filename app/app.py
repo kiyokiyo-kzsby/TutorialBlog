@@ -5,6 +5,7 @@ from hashlib import sha256
 from PIL import Image
 import random,string
 import os
+from html import escape
 
 app = Flask(__name__)
 from app.models import db,Content,User,ContentGoodUser
@@ -52,7 +53,7 @@ def login():
 
 @app.route("/login_submit",methods=["POST"])
 def login_submit():
-    user_name = request.form["user_name"]
+    user_name = escape(request.form["user_name"])
     user = User.query.filter_by(name=user_name).first()
     if user is None:
         return redirect(url_for("login"))
@@ -72,10 +73,14 @@ def sign_up():
 
 @app.route("/sign_up_submit",methods=["POST"])
 def sign_up_submit():
-    user_name = request.form["user_name"]
+    if request.form["user_name"].find("/") >= 0:
+        abort(404)
+    user_name = escape(request.form["user_name"])
     user = User.query.filter_by(name=user_name).first()
     if user is None:
         password = request.form["password"]
+        if user_name == "" or password == "":
+            return redirect(url_for("sign_up"))
         confirm_password = request.form["confirm_password"]
         if password != confirm_password:
             return redirect(url_for("sign_up"))
@@ -128,8 +133,10 @@ def edit(content_id):
 @app.route("/publish/<content_id>",methods=["POST"])
 @login_required
 def publish(content_id):
-    title = request.form["title"]
-    body = request.form["body"]
+    title = escape(request.form["title"])
+    body = escape(request.form["body"])
+    if title == "" or body == "":
+        abort(404)
     if(content_id == "new"):
         content = Content(title=title,body=body,user_id=current_user.id)
         db.session.add(content)
@@ -171,8 +178,10 @@ def config(user_name):
 @login_required
 def config_submit():
     user = User.query.filter_by(id=current_user.id).all()[0]
-    user.name = request.form["name"]
-    user.description = request.form["description"]
+    if len(User.query.filter_by(name=request.form["name"]).all()) >= 1 or request.form["name"].find("/") >= 0:
+        abort(404)
+    user.name = escape(request.form["name"])
+    user.description = escape(request.form["description"])
     icon = request.files["icon"]
     if icon.filename == "":
         db.session.add(user)
