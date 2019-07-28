@@ -9,6 +9,8 @@ from html import escape
 
 app = Flask(__name__)
 from app.models import db,Content,User,ContentGoodUser
+db.create_all()
+db.session.commit()
 login_manager = LoginManager()
 login_manager.init_app(app)
 app.config["SECRET_KEY"] = key.SECRET_KEY
@@ -244,4 +246,4 @@ def good():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
