@@ -1,4 +1,4 @@
-from flask import Flask,render_template,request,redirect,url_for,abort
+from flask import Flask,render_template,request,redirect,url_for,abort,jsonify
 from flask_login import LoginManager,login_user,logout_user,login_required,current_user
 from app import key
 from hashlib import sha256
@@ -6,6 +6,7 @@ from PIL import Image
 import random,string
 import os
 from html import escape
+from elasticsearch import Elasticsearch
 
 app = Flask(__name__)
 from app.models import db,Content,User,ContentGoodUser
@@ -16,7 +17,7 @@ login_manager.init_app(app)
 app.config["SECRET_KEY"] = key.SECRET_KEY
 app.config["MAX_CONTENT_LENGTH"] = 1 * 1024 * 1024;
 app.config['UPLOAD_FOLDER'] = "/uploads"
-
+es = Elasticsearch(hosts="es01:9200")
 
 
 @login_manager.user_loader
@@ -243,6 +244,20 @@ def good():
         content.good_count = content.good_count + 1
     db.session.commit()
     return str(content.good_count)
+
+
+@app.route("/search/<index>")
+def exist(index):
+    res = es.search(index=index,  body={"query": {"match_all": {}}})
+    return jsonify(res)
+
+
+@app.route("/register/<index>,<content>")
+def register(index,content):
+    document = {}
+    document["content"] = content
+    res = es.index(index=index, body=document)
+    return jsonify(res)
 
 
 if __name__ == "__main__":

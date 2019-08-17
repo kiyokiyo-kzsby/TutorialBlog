@@ -13,6 +13,7 @@ flask-session = "*"
 flask-login = "*"
 pillow = "*"
 gunicorn = "*"
+elasticsearch = "*"
 
 [requires]
 python_version = "3.7"

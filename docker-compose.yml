@@ -19,6 +19,8 @@ services:
      - "4000"
     depends_on:
      - postgres-server
+     - es01
+     - es02
   postgres-server:
     build: ./postgres
     expose:
@@ -29,6 +31,46 @@ services:
     volumes:
       - ./postgres/initdb:/docker-entrypoint-initdb.d
       - database:/var/lib/postgresql/data
+  es01:
+    build: ./elasticsearch
+    container_name: es01
+    environment:
+      - node.name=es01
+      - discovery.seed_hosts=es02
+      - cluster.initial_master_nodes=es01,es02
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata01:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+  es02:
+    build: ./elasticsearch
+    container_name: es02
+    environment:
+      - node.name=es02
+      - discovery.seed_hosts=es01
+      - cluster.initial_master_nodes=es01,es02
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata02:/usr/share/elasticsearch/data
+
 volumes:
   database:
     driver: local
+  esdata01:
+    driver: local
+  esdata02:
+    driver: local
+
