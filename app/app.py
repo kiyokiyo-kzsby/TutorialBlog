@@ -1,15 +1,16 @@
-from flask import Flask,render_template,request,redirect,url_for,abort,jsonify
-from flask_login import LoginManager,login_user,logout_user,login_required,current_user
+from app.models import db, Content, User, ContentGoodUser
+from flask import Flask, render_template, request, redirect, url_for, abort, jsonify
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from app import key
 from hashlib import sha256
 from PIL import Image
-import random,string
+import random
+import string
 import os
 from html import escape
 from elasticsearch import Elasticsearch
 
 app = Flask(__name__)
-from app.models import db,Content,User,ContentGoodUser
 db.create_all()
 db.session.commit()
 login_manager = LoginManager()
@@ -17,6 +18,7 @@ login_manager.init_app(app)
 app.config["SECRET_KEY"] = key.SECRET_KEY
 app.config["MAX_CONTENT_LENGTH"] = 1 * 1024 * 1024
 app.config['UPLOAD_FOLDER'] = "/uploads"
+app.config['JSON_AS_ASCII'] = False
 es = Elasticsearch(hosts="es01:9200")
 
 
@@ -29,7 +31,8 @@ def load_user(id):
 def index():
     contents = Content.query.join(User).order_by(Content.pub_date.desc()).all()
     if current_user.is_authenticated:
-        content_good_users = ContentGoodUser.query.filter_by(user_id=current_user.id).all()
+        content_good_users = ContentGoodUser.query.filter_by(
+            user_id=current_user.id).all()
         good_content = []
         for content_good_user in content_good_users:
             good_content.append(content_good_user.content_id)
@@ -43,10 +46,11 @@ def index():
 def content(content_id):
     content = Content.query.filter_by(id=content_id).join(User).all()[0]
     if current_user.is_authenticated:
-        content_good_users = ContentGoodUser.query.filter_by(user_id=current_user.id,content_id=content_id).all()
+        content_good_users = ContentGoodUser.query.filter_by(
+            user_id=current_user.id, content_id=content_id).all()
         if len(content_good_users) >= 1:
             content.good = True
-    return render_template("content.html",content=content)
+    return render_template("content.html", content=content)
 
 
 @app.route("/login")
@@ -54,14 +58,15 @@ def login():
     return render_template("login.html")
 
 
-@app.route("/login_submit",methods=["POST"])
+@app.route("/login_submit", methods=["POST"])
 def login_submit():
     user_name = escape(request.form["user_name"])
     user = User.query.filter_by(name=user_name).first()
     if user is None:
         return redirect(url_for("login"))
     else:
-        hashed_password = sha256((user_name + request.form["password"] + key.SALT).encode("utf-8")).hexdigest()
+        hashed_password = sha256(
+            (user_name + request.form["password"] + key.SALT).encode("utf-8")).hexdigest()
         if hashed_password != user.hashed_password:
             return redirect(url_for("login"))
         else:
@@ -74,7 +79,7 @@ def sign_up():
     return render_template("sign_up.html")
 
 
-@app.route("/sign_up_submit",methods=["POST"])
+@app.route("/sign_up_submit", methods=["POST"])
 def sign_up_submit():
     if request.form["user_name"].find("/") >= 0:
         abort(404)
@@ -88,8 +93,10 @@ def sign_up_submit():
         if password != confirm_password:
             return redirect(url_for("sign_up"))
         else:
-            hashed_password = sha256((user_name + password + key.SALT).encode("utf-8")).hexdigest()
-            new_user = User(name=user_name,hashed_password=hashed_password,icon_file_name="default.jpg",description="")
+            hashed_password = sha256(
+                (user_name + password + key.SALT).encode("utf-8")).hexdigest()
+            new_user = User(name=user_name, hashed_password=hashed_password,
+                            icon_file_name="default.jpg", description="")
             db.session.add(new_user)
             db.session.commit()
             login_user(new_user)
@@ -103,14 +110,15 @@ def mypage(user_name):
     user = User.query.filter_by(name=user_name).all()[0]
     contents = Content.query.filter_by(user_id=user.id).all()
     if current_user.is_authenticated:
-        content_good_users = ContentGoodUser.query.filter_by(user_id=current_user.id).all()
+        content_good_users = ContentGoodUser.query.filter_by(
+            user_id=current_user.id).all()
         good_content = []
         for content_good_user in content_good_users:
             good_content.append(content_good_user.content_id)
         for content in contents:
             if content.id in good_content:
                 content.good = True
-    return render_template("mypage.html",user=user, contents=contents)
+    return render_template("mypage.html", user=user, contents=contents)
 
 
 @app.route("/logout")
@@ -127,13 +135,13 @@ def edit(content_id):
         return render_template("edit.html")
     else:
         content = Content.query.filter_by(id=content_id).all()[0]
-        if(content.user_id==current_user.id):
+        if(content.user_id == current_user.id):
             return render_template("edit.html", content=content)
         else:
             return abort(404)
 
 
-@app.route("/publish/<content_id>",methods=["POST"])
+@app.route("/publish/<content_id>", methods=["POST"])
 @login_required
 def publish(content_id):
     title = escape(request.form["title"])
@@ -141,7 +149,7 @@ def publish(content_id):
     if title == "" or body == "":
         abort(404)
     if(content_id == "new"):
-        content = Content(title=title,body=body,user_id=current_user.id)
+        content = Content(title=title, body=body, user_id=current_user.id)
         db.session.add(content)
         db.session.commit()
         return redirect(url_for("index"))
@@ -177,11 +185,11 @@ def config(user_name):
         abort(404)
 
 
-@app.route("/config_submit",methods=["POST"])
+@app.route("/config_submit", methods=["POST"])
 @login_required
 def config_submit():
     user = User.query.filter_by(id=current_user.id).all()[0]
-    if (current_user.name != request.form["name"] and len(User.query.filter_by(name=request.form["name"]).all())>=1) or request.form["name"].find("/") >= 0:
+    if (current_user.name != request.form["name"] and len(User.query.filter_by(name=request.form["name"]).all()) >= 1) or request.form["name"].find("/") >= 0:
         abort(404)
     user.name = escape(request.form["name"])
     user.description = escape(request.form["description"])
@@ -191,11 +199,12 @@ def config_submit():
         db.session.commit()
     else:
         file_extension = icon.filename.rsplit('.', 1)[1]
-        if file_extension in ["jpg","png"]:
+        if file_extension in ["jpg", "png"]:
             icon = Image.open(request.files["icon"])
-            icon_resize = icon.resize((256,256))
+            icon_resize = icon.resize((256, 256))
             old_file_name = user.icon_file_name
-            new_file_name = "".join(random.choices(string.ascii_letters+string.digits,k=20))+".jpg"
+            new_file_name = "".join(random.choices(
+                string.ascii_letters+string.digits, k=20))+".jpg"
             user.icon_file_name = new_file_name
             db.session.add(user)
             db.session.commit()
@@ -213,13 +222,16 @@ def reset_password():
     return render_template("reset_password.html")
 
 
-@app.route("/reset_password_submit",methods=["POST"])
+@app.route("/reset_password_submit", methods=["POST"])
 @login_required
 def submit_reset_password():
-    hashed_now_password = sha256((current_user.name + request.form["now_password"] + key.SALT).encode("utf-8")).hexdigest()
+    hashed_now_password = sha256(
+        (current_user.name + request.form["now_password"] + key.SALT).encode("utf-8")).hexdigest()
     if hashed_now_password == current_user.hashed_password:
-        hashed_new_password = sha256((current_user.name + request.form["new_password"] + key.SALT).encode("utf-8")).hexdigest()
-        hashed_confirm_new_password = sha256((current_user.name + request.form["confirm_new_password"] + key.SALT).encode("utf-8")).hexdigest()
+        hashed_new_password = sha256(
+            (current_user.name + request.form["new_password"] + key.SALT).encode("utf-8")).hexdigest()
+        hashed_confirm_new_password = sha256(
+            (current_user.name + request.form["confirm_new_password"] + key.SALT).encode("utf-8")).hexdigest()
         if hashed_new_password == hashed_confirm_new_password:
             current_user.hashed_password = hashed_new_password
             db.session.add(current_user)
@@ -234,12 +246,14 @@ def good():
     content_id = request.json['content_id']
     content = Content.query.filter_by(id=content_id).all()[0]
     user_id = current_user.id
-    content_good_user = ContentGoodUser.query.filter_by(content_id=content_id,user_id=user_id).all()
+    content_good_user = ContentGoodUser.query.filter_by(
+        content_id=content_id, user_id=user_id).all()
     if len(content_good_user) >= 1:
         db.session.delete(content_good_user[0])
         content.good_count = content.good_count - 1
     else:
-        content_good_user = ContentGoodUser(content_id=content_id,user_id=user_id)
+        content_good_user = ContentGoodUser(
+            content_id=content_id, user_id=user_id)
         db.session.add(content_good_user)
         content.good_count = content.good_count + 1
     db.session.commit()
@@ -248,14 +262,22 @@ def good():
 
 @app.route("/search_suggest", methods=["POST"])
 def search_suggest():
-    search_text = request.json["search_text"]
+    search_text = request.json['search_text']
     # es.search(index=index,  body={"query": {"match_all": {}}})
-    suggest_list = ["通信","うまく","いってますよ"]
-    return suggest_list
+    suggest_list = [
+        {"id": 1,
+         "word": "通信"},
+        {"id": 2,
+         "word": "うまく"},
+        {"id": 3,
+         "word": "いってますよ"},
+        {"id": 4,
+         "word": search_text}]
+    return jsonify(suggest_list)
 
 
 @app.route("/register/<index>,<content>")
-def register(index,content):
+def register(index, content):
     document = {}
     document["content"] = content
     res = es.index(index=index, body=document)
