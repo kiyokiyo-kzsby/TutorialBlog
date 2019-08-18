@@ -263,7 +263,6 @@ def good():
 @app.route("/search_suggest", methods=["POST"])
 def search_suggest():
     search_text = request.json['search_text']
-    # es.search(index=index,  body={"query": {"match_all": {}}})
     suggest_list = [
         {"id": 1,
          "word": "通信"},
