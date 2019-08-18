@@ -1,4 +1,3 @@
-from app.models import db, Content, User, ContentGoodUser
 from flask import Flask, render_template, request, redirect, url_for, abort, jsonify
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from app import key
@@ -11,6 +10,7 @@ from html import escape
 from elasticsearch import Elasticsearch
 
 app = Flask(__name__)
+from app.models import db, Content, User, ContentGoodUser
 db.create_all()
 db.session.commit()
 login_manager = LoginManager()
