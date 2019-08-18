@@ -15,7 +15,7 @@ db.session.commit()
 login_manager = LoginManager()
 login_manager.init_app(app)
 app.config["SECRET_KEY"] = key.SECRET_KEY
-app.config["MAX_CONTENT_LENGTH"] = 1 * 1024 * 1024;
+app.config["MAX_CONTENT_LENGTH"] = 1 * 1024 * 1024
 app.config['UPLOAD_FOLDER'] = "/uploads"
 es = Elasticsearch(hosts="es01:9200")
 
@@ -246,10 +246,12 @@ def good():
     return str(content.good_count)
 
 
-@app.route("/search/<index>")
-def exist(index):
-    res = es.search(index=index,  body={"query": {"match_all": {}}})
-    return jsonify(res)
+@app.route("/search_suggest", methods=["POST"])
+def search_suggest():
+    search_text = request.json["search_text"]
+    # es.search(index=index,  body={"query": {"match_all": {}}})
+    suggest_list = ["通信","うまく","いってますよ"]
+    return suggest_list
 
 
 @app.route("/register/<index>,<content>")
