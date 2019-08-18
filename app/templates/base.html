@@ -1,33 +1,67 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>よくあるブログサービス</title>
-    <link href="https://use.fontawesome.com/releases/v5.9.0/css/all.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="/static/style.css">
+    <link
+      href="https://use.fontawesome.com/releases/v5.9.0/css/all.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" type="text/css" href="/static/style.css" />
     <script type="text/javascript" src="/static/jquery-3.4.1.min.js"></script>
     <script type="text/javascript" src="/static/good.js"></script>
-</head>
-<body>
+    <script type="text/javascript" src="/static/search_suggest.js"></script>
+  </head>
+  <body>
     <div id="navigation_bar">
-        <a href="/"><i class="fas fa-home fa-2x nav-icon" title="メインページに戻る"></i></a>
-        {% if current_user.is_authenticated %}
-        <a href="/edit/new"><i class="far fa-file fa-2x nav-icon" title="新規作成"></i></a>
-        <a href="/mypage/{{current_user.name}}">
-            <img src="/static/uploads/{{current_user.icon_file_name}}" width="32" height="32" title="{{current_user.name}}">
-            {{current_user.name}}
-        </a>
-        <a href="/config/{{current_user.name}}"><i class="fas fa-user-cog fa-2x nav-icon" title="ユーザ設定"></i></a>
-        <a href="/logout"><i class="fas fa-sign-out-alt fa-2x nav-icon" title="ログアウト"></i></a>
-        {% else %}
-        <a href="/login"><i class="fas fa-sign-in-alt fa-2x nav-icon" title="ログイン"></i></a>
-        {% endif %}
+      <a href="/"
+        ><i class="fas fa-home fa-2x nav-icon" title="メインページに戻る"></i
+      ></a>
+      <form action="/search" method="GET">
+        <input
+          type="search"
+          placeholder="キーワードを入力"
+          autocomplete="off"
+          name="q"
+          id="site-search"
+          list="search_suggest"
+        />
+        <datalist id="search_suggest">
+          <option value="Chrome"> </option>
+          <option value="Firefox"> </option>
+          <option value="Internet Explorer"> </option>
+          <option value="Opera"> </option>
+          <option value="Safari"> </option>
+        </datalist>
+      </form>
+      {% if current_user.is_authenticated %}
+      <a href="/edit/new"
+        ><i class="far fa-file fa-2x nav-icon" title="新規作成"></i
+      ></a>
+      <a href="/mypage/{{ current_user.name }}">
+        <img
+          src="/static/uploads/{{ current_user.icon_file_name }}"
+          width="32"
+          height="32"
+          title="{{ current_user.name }}"
+        />
+        {{ current_user.name }}
+      </a>
+      <a href="/config/{{ current_user.name }}"
+        ><i class="fas fa-user-cog fa-2x nav-icon" title="ユーザ設定"></i
+      ></a>
+      <a href="/logout"
+        ><i class="fas fa-sign-out-alt fa-2x nav-icon" title="ログアウト"></i
+      ></a>
+      {% else %}
+      <a href="/login"
+        ><i class="fas fa-sign-in-alt fa-2x nav-icon" title="ログイン"></i
+      ></a>
+      {% endif %}
     </div>
 
     <div id="body">
-        {% block body %}
-        {% endblock %}
+      {% block body %} {% endblock %}
     </div>
-
-</body>
+  </body>
 </html>
